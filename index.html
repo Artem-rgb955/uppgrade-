@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#111216"><title>CRYPTO UPGRADE</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+@property --win{syntax:'<angle>';inherits:false;initial-value:288deg}
+:root{--bg:#101114;--panel:#191a1f;--panel2:#202127;--line:#303138;--yellow:#ffdc00;--muted:#8e9099;--red:#ff4655;--green:#49d49d}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}input{-webkit-user-select:text;user-select:text}
+body{margin:0;background:radial-gradient(ellipse at 50% 0,#202027 0,transparent 50%),var(--bg);color:#f7f7f8;font-family:Inter,Arial,sans-serif;font-size:13px}
+button,input{font:inherit}button{cursor:pointer;border:0}button:disabled{opacity:.45;cursor:not-allowed}
+.top{height:58px;background:#18191e;border-bottom:1px solid #292a30;display:flex;align-items:center;padding:0 18px;gap:14px;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:20px;letter-spacing:-1px;white-space:nowrap}.mark{color:var(--yellow);font-size:27px}
+.stats{color:#b6b7be;font-size:11px;line-height:1.5}
+.nav{display:flex;gap:24px;margin:auto;font-size:12px;color:#777;font-weight:800}.nav span{cursor:default}.nav .active{color:var(--yellow)}.nav .link{cursor:pointer}
+.balanceChip{display:flex;align-items:center;gap:9px;background:#25262c;border:1px solid #3a3b42;color:#fff;border-radius:8px;padding:5px 5px 5px 13px;font-weight:800;white-space:nowrap}
+.balanceChip .plus{background:var(--yellow);color:#171717;border-radius:6px;width:28px;height:28px;display:grid;place-items:center;font-size:19px;line-height:1;font-weight:900}
+.balanceChip:hover{border-color:var(--yellow)}
+.profileTop{background:var(--yellow);color:#171717;border-radius:8px;padding:12px 16px;font-weight:800}
+.layout{display:grid;grid-template-columns:180px minmax(0,1fr);min-height:calc(100vh - 58px);min-height:calc(100dvh - 58px)}
+.sidebar{padding:10px 4px;border-right:1px solid #25262b;background:#17181c;overflow:auto}
+.sideTitle{font-weight:800;padding:12px 9px;color:#bbb}
+.skinMini{width:100%;height:75px;border-radius:8px;margin-bottom:5px;padding:7px;text-align:left;position:relative;overflow:hidden;background:linear-gradient(110deg,#28221a,#15161a);border:1px solid #2c2d33;color:white}
+.skinMini:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#ffdc001c,transparent)}
+.skinMini img{position:absolute;right:5px;top:5px;width:95px;height:50px;object-fit:contain;filter:drop-shadow(0 4px 7px #000)}
+.skinMini b,.skinMini small{position:relative;display:block;max-width:90px;text-shadow:0 1px 3px #000}.skinMini b{font-size:10px}.skinMini small{font-size:8px;color:#b9bac1;margin-top:3px}
+.main{padding:22px clamp(12px,3vw,42px);max-width:1500px;width:100%;margin:auto}
+.heroLogo{text-align:center;font-size:20px;font-weight:900;margin:4px 0 28px;letter-spacing:-.5px}.heroLogo span{color:var(--yellow);font-size:27px;vertical-align:-2px}
+.upgradeGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,.92fr) minmax(0,1fr);gap:18px;align-items:center}
+.pick{height:260px;border:1px solid #202127;border-radius:13px;background:radial-gradient(ellipse at center,#29251b,transparent 65%),#191a1f;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:14px;text-align:center}
+.pick h3{position:absolute;top:10px;left:8px;right:8px;font-size:12px;margin:0;color:#e8e8eb}
+.pick .bigItem{width:88%;height:145px;object-fit:contain;filter:drop-shadow(0 8px 12px #000)}
+.placeholder{font-size:64px;color:var(--yellow);text-shadow:0 0 35px #ffdc0030}
+.itemName{font-weight:800;margin-top:7px;max-width:100%;overflow:hidden;text-overflow:ellipsis}.price{color:var(--yellow);font-weight:800;margin-top:5px}
+.gaugeWrap{display:flex;flex-direction:column;align-items:center;gap:17px}
+/* Колесо: жёлтая дуга = шанс выигрыша, длина дуги берётся из --win (шанс × 3.6°) и плавно меняется */
+.gauge{--win:288deg;width:min(100%,260px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;
+  background:conic-gradient(from 0deg,var(--yellow) 0deg,#ff8d25 var(--win),#292a2f var(--win) 360deg);padding:12px;box-shadow:0 0 35px #ffdc0010;transition:--win .45s ease,box-shadow .3s}
+.gauge:before{content:'';position:absolute;inset:12px;border-radius:50%;background:#17181c;border:1px solid #37383d}
+.gauge.win{box-shadow:0 0 45px #49d49d55}.gauge.lose{box-shadow:0 0 45px #ff465555}
+.gaugeInner{z-index:1;border-radius:50%;width:76%;height:76%;background:#202127;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pointer{position:absolute;inset:0;z-index:2;pointer-events:none;transform-origin:50% 50%}
+.pointer i{position:absolute;left:50%;top:-4px;margin-left:-9px;border-left:9px solid transparent;border-right:9px solid transparent;border-top:16px solid #fff;filter:drop-shadow(0 2px 4px #000)}
+.chevrons{font-size:62px;line-height:.65;color:var(--yellow);font-weight:900}
+.chanceLabel{font-weight:900;font-size:20px;margin-top:18px}.chanceLabel.win{color:var(--green)}.chanceLabel.lose{color:var(--red)}
+.upgradeBtn{width:100%;background:var(--yellow);color:#171717;padding:16px;border-radius:11px;font-size:16px;font-weight:900;box-shadow:0 7px 25px #ffdc0017}.upgradeBtn:hover{filter:brightness(1.05)}
+.chanceBar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.chanceBtn{background:#25262c;color:#d5d5da;border:1px solid #383940;border-radius:8px;padding:8px 13px;font-weight:800}.chanceBtn.active{background:var(--yellow);color:#161616;border-color:var(--yellow)}
+.bottomGrid{display:grid;grid-template-columns:1fr 1.05fr;gap:10px;margin-top:22px}
+.section{background:#191a1f;border:1px solid #25262b;border-radius:13px;overflow:hidden;min-width:0}
+.sectionHead{min-height:54px;padding:6px 13px;display:flex;align-items:center;gap:10px;background:#202127;border-bottom:1px solid #2a2b31;font-weight:800}
+.sectionHead .icon{color:var(--yellow);font-size:18px}.headTitle{white-space:nowrap}
+.tabs{display:flex;gap:4px}.tab{padding:7px 9px;border-radius:7px;background:#2b2c32;color:#bbb}.tab.active{background:var(--yellow);color:#171717}
+.filters{display:flex;gap:5px;margin-left:auto;min-width:0}
+.filters input,.headSearch{background:#17181c;border:1px solid #393a41;color:#fff;padding:8px;border-radius:7px;outline:none;min-width:0}
+.filters input{width:75px}.filters #targetQuery{width:120px}.headSearch{margin-left:auto;width:150px}
+.filters input::placeholder,.headSearch::placeholder{color:#888}
+.filters .search{background:#2a2b31;color:#fff;border-radius:7px;padding:0 10px}
+.itemsGrid{padding:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;max-height:365px;overflow:auto;align-content:start}
+.itemCard{background:linear-gradient(145deg,#292a30,#1a1b20);border:1px solid #34353c;border-radius:8px;min-width:0;padding:6px;text-align:left;color:#fff;position:relative;overflow:hidden}
+.itemCard:hover{border-color:#5a5b63}.itemCard.selected{border:1px solid var(--yellow);box-shadow:0 0 0 1px #ffdc0040}
+.itemCard img{width:100%;height:72px;object-fit:contain}
+.itemCard .itemTitle{font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.itemCard .itemPrice{font-size:11px;color:var(--yellow);font-weight:800;margin-top:5px}
+.itemCard .rarity{font-size:9px;color:#9698a1;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.more{display:block;width:calc(100% - 20px);margin:0 10px 10px;padding:10px;border-radius:8px;background:#2b2c32;color:#fff;font-weight:800}
+.empty{padding:36px 14px;text-align:center;color:var(--muted);line-height:1.7}.empty strong{color:#f2f2f4;display:block;font-size:15px;margin-bottom:7px}
+.secondary{padding:11px;border-radius:8px;background:#2b2c32;color:#fff;font-weight:800}
+.note{color:#898b94;font-size:11px;line-height:1.5}
+.status{padding:9px 12px;color:#c8c9ce;font-size:12px;min-height:35px}.status.error{color:#ff828b}.status.ok{color:#58e1ae}
+.modal{position:fixed;inset:0;background:#000b;z-index:20;display:none;align-items:center;justify-content:center;padding:18px}.modal.open{display:flex}
+.modalBox{max-width:460px;width:100%;max-height:92vh;overflow:auto;background:#1b1c21;border:1px solid #3a3b42;border-radius:14px;padding:20px}
+.modalBox h2{margin-top:0}.close{float:right;background:#2a2b31;color:white;border-radius:7px;padding:7px 10px}
+.profileForm{display:grid;gap:10px;margin-top:10px}.fieldLabel{font-size:11px;color:#aeb0b9;font-weight:700}
+.field{width:100%;padding:11px;border:1px solid #393a41;border-radius:8px;background:#141519;color:#fff;outline:none}
+.balanceBig{font-size:26px;color:var(--yellow);font-weight:900}
+.txRow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #2b2c32;font-size:12px}.txRow small{color:#7d7f88;display:block}.txRow b.plus{color:var(--green)}.txRow b.minus{color:#ff828b}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{background:#25262c;color:#d5d5da;border:1px solid #383940;border-radius:8px;padding:8px 11px;font-weight:700}.chip.active{background:var(--yellow);color:#161616;border-color:var(--yellow)}
+.footer{text-align:center;color:#8e9099;font-size:11px;line-height:1.6;padding:22px 14px calc(22px + var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}.footer .age{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;border:2px solid var(--yellow);color:var(--yellow);font-weight:900;font-size:15px;margin-bottom:8px}.footer .brandFoot{color:#555;font-size:10px;margin-top:4px}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}.sidebar{display:none}.modal{align-items:flex-end;padding:0}.modalBox{max-width:none;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:calc(20px + var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}.chanceBtn,.tab,.chip{min-height:38px}.top{padding:0 10px;gap:8px}.stats,.nav{display:none}.brand{margin-right:auto;font-size:16px}.mark{font-size:20px}
+ .main{padding:15px 10px}.heroLogo{margin-bottom:18px}.upgradeGrid{grid-template-columns:1fr 1fr;gap:8px}
+ .pick{height:205px}.pick .bigItem{height:110px}
+ .gaugeWrap{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:100px 1fr;gap:12px}
+ .gauge{width:100px;padding:7px}.gauge:before{inset:7px}.chevrons{font-size:35px}.chanceLabel{font-size:15px;margin-top:8px}.gaugeInner{width:75%;height:75%}
+ .pointer i{border-left-width:6px;border-right-width:6px;border-top-width:11px;margin-left:-6px;top:-3px}
+ .gaugeWrap .upgradeBtn{grid-column:1/-1}.bottomGrid{grid-template-columns:1fr}
+ .itemsGrid{max-height:300px}.filters input{width:60px}.filters #targetQuery{width:90px}.profileTop{padding:10px;font-size:11px}.balanceChip{padding-left:9px;font-size:12px}
+ .sectionHead{padding:6px 8px;gap:6px;flex-wrap:wrap}.headTitle{font-size:12px}.headSearch{width:120px}
+}
+@media(max-width:430px){.brandText{font-size:13px}.profileTop{padding:10px 11px}}
+@media(max-width:390px){.pick{height:175px}.pick h3{font-size:10px}.itemsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.filters input{width:48px;padding:7px}.filters #targetQuery{width:70px}.chanceBtn{padding:7px 10px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark">❯❯</span><span class="brandText">CRYPTO UPGRADE</span></div>
+  <div class="stats">● Онлайн</div>
+  <nav class="nav"><span class="active">UPGRADE</span><span class="link" id="navProfile">PROFILE</span></nav>
+  <button class="balanceChip" id="openDeposit" title="Пополнить баланс"><span id="balanceTop">0,00 ₽</span><span class="plus">+</span></button>
+  <button class="profileTop" id="openProfile">Профиль</button>
+</header>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sideTitle">ТОП СКИНЫ</div>
+    <div id="sideItems"></div>
+  </aside>
+  <main class="main">
+    <div class="heroLogo"><span>❯❯</span> CRYPTO UPGRADE</div>
+    <div class="upgradeGrid">
+      <div class="pick" id="sourcePick"></div>
+      <div class="gaugeWrap">
+        <div class="gauge" id="gauge"><div class="pointer" id="pointer"><i></i></div><div class="gaugeInner"><div class="chevrons">❯<br>❯</div><div class="chanceLabel" id="chanceLabel">80%</div></div></div>
+        <div class="chanceBar" id="chanceBar">
+          <button class="chanceBtn active" data-chance="80">80%</button><button class="chanceBtn" data-chance="75">75%</button><button class="chanceBtn" data-chance="50">50%</button><button class="chanceBtn" data-chance="30">30%</button><button class="chanceBtn" data-chance="10">10%</button>
+        </div>
+        <button class="upgradeBtn" id="upgradeBtn" disabled>❯❯ ПРОКАЧАТЬ</button>
+      </div>
+      <div class="pick" id="targetPick"></div>
+    </div>
+    <div class="bottomGrid">
+      <section class="section">
+        <div class="sectionHead"><div class="tabs"><button class="tab active" id="inventoryTab">🎒</button><button class="tab" id="shopTab">▦</button></div><span class="headTitle" id="leftTitle">Мой инвентарь</span><span class="note" id="invCount" style="margin-left:auto"></span><button class="tab" id="shopSort" style="display:none" title="Сортировка по цене">↑ Дешёвые</button><input class="headSearch" id="shopQuery" type="text" placeholder="Поиск в магазине" style="display:none" aria-label="Поиск в магазине"></div>
+        <div id="inventoryGrid" class="itemsGrid"></div>
+        <button class="more" id="shopMore" style="display:none">Показать ещё</button>
+        <div id="inventoryEmpty" class="empty" style="display:none"></div>
+      </section>
+      <section class="section">
+        <div class="sectionHead"><span class="icon">❯❯</span><span class="headTitle">Прокачать до</span><div class="filters"><input id="targetQuery" type="text" placeholder="Название" aria-label="Поиск предмета"><input id="priceMin" type="number" min="0" placeholder="от ₽"><input id="priceMax" type="number" min="0" placeholder="до ₽"><button class="search" id="clearFilters" title="Сбросить">↻</button></div></div>
+        <div id="targetGrid" class="itemsGrid"></div>
+        <button class="more" id="targetMore" style="display:none">Показать ещё</button>
+        <div id="targetEmpty" class="empty" style="display:none"></div>
+        <div class="status" id="status"></div>
+      </section>
+    </div>
+    <div class="footer"><span class="age">18+</span><div>Это игра для лиц старше 18 лет. Играйте ответственно.</div><div class="brandFoot">CRYPTO UPGRADE</div></div>
+  </main>
+</div>
+
+<div class="modal" id="profileModal"><div class="modalBox"><button class="close" id="closeProfile">Закрыть</button><h2>Профиль игрока</h2><div id="profileSummary" class="note"></div>
+  <div class="profileForm">
+    <label class="fieldLabel" for="steamUrl">Ссылка на Steam-профиль или инвентарь</label>
+    <input id="steamUrl" class="field" placeholder="https://steamcommunity.com/id/...">
+    <button class="upgradeBtn" id="saveProfile">Сохранить профиль</button>
+    <div class="note" id="profileMsg">Ссылка сохраняется в профиле. Она не подтверждает владение предметами и не запускает передачу скинов.</div>
+    <hr style="border-color:#333;width:100%">
+    <div class="fieldLabel">Баланс</div><div class="balanceBig" id="balanceValue">0,00 ₽</div>
+    <button class="secondary" id="profileDeposit">Пополнить баланс</button>
+    <div class="fieldLabel" style="margin-top:6px">Последние операции</div><div id="txList"></div>
+  </div></div></div>
+
+<div class="modal" id="depositModal"><div class="modalBox"><button class="close" id="closeDeposit">Закрыть</button><h2>Пополнение баланса</h2>
+  <div class="profileForm">
+    <div class="fieldLabel">Текущий баланс</div><div class="balanceBig" id="depositBalance">0,00 ₽</div>
+    <div class="fieldLabel">Криптовалюта / сеть</div><div class="chips" id="networkChips"></div>
+    <label class="fieldLabel" for="depositAmount">Сумма пополнения, ₽</label>
+    <input id="depositAmount" class="field" type="number" min="100" step="50" placeholder="Например, 1000">
+    <div class="chips" id="quickAmounts"><button class="chip" data-amount="500">500 ₽</button><button class="chip" data-amount="1000">1 000 ₽</button><button class="chip" data-amount="5000">5 000 ₽</button><button class="chip" data-amount="10000">10 000 ₽</button></div>
+    <button class="upgradeBtn" id="depositGo">Продолжить</button>
+    <div class="note" id="depositMsg"></div>
+    <button class="secondary" id="devCredit" style="display:none">Тестовое пополнение +1 000 ₽ (только DEV_MODE)</button>
+  </div></div></div>
+
+<script>
+(() => {
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready(); tg.expand();
+    document.body.classList.add('tma');
+    try { tg.setHeaderColor('#18191e'); tg.setBackgroundColor('#101114'); tg.setBottomBarColor?.('#101114'); tg.disableVerticalSwipes?.(); } catch (_) { /* старая версия Telegram */ }
+  }
+  const initData = tg?.initData || '';
+  const $ = id => document.getElementById(id);
+  const nf = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money = cents => nf.format(Number(cents || 0) / 100) + ' ₽';
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const enc = encodeURIComponent;
+  const state = {
+    user: null, inventory: [], popular: [], transactions: [], config: { devMode: false },
+    source: null, target: null, chance: 80, view: 'inventory', busy: false, pointer: 0,
+    shop: { items: [], page: 0, hasMore: false, q: '', sort: 'asc' },
+    targets: { items: [], page: 0, hasMore: false, band: null },
+    network: null, networks: []
+  };
+
+  async function api(url, options = {}) {
+    const r = await fetch(url, { ...options, headers: { 'Content-Type': 'application/json', 'x-telegram-init-data': initData, ...options.headers } });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error(data.error || 'Ошибка запроса'); e.code = data.code; throw e; }
+    return data;
+  }
+  const debounce = (fn, ms = 350) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  function askConfirm(msg) {
+    return new Promise(res => { if (tg?.showConfirm && tg.isVersionAtLeast?.('6.2')) tg.showConfirm(msg, res); else res(window.confirm(msg)); });
+  }
+  function tap() { try { tg?.HapticFeedback?.selectionChanged(); } catch (_) { /* ignore */ } }
+  // Кнопка «Назад» Telegram закрывает открытые окна.
+  function syncBack() {
+    if (!tg?.BackButton) return;
+    const open = !!document.querySelector('.modal.open');
+    try { open ? tg.BackButton.show() : tg.BackButton.hide(); } catch (_) { /* ignore */ }
+  }
+  function haptic(kind) { try { tg?.HapticFeedback?.notificationOccurred(kind); } catch (_) { /* ignore */ } }
+
+  function placeholderSvg(label) {
+    const safe = esc(label).slice(0, 30);
+    return 'data:image/svg+xml;charset=UTF-8,' + enc(`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><defs><linearGradient id="g"><stop stop-color="#35302a"/><stop offset="1" stop-color="#17181c"/></linearGradient></defs><rect width="100%" height="100%" rx="12" fill="url(#g)"/><path d="M40 125 L115 65 L185 100 L260 48" stroke="#ffdc00" stroke-opacity=".7" stroke-width="5" fill="none"/><text x="50%" y="88%" fill="#f5f5f5" font-family="Arial" font-size="13" text-anchor="middle">${safe}</text></svg>`);
+  }
+  // Если картинка Steam не загрузилась — подставляем заглушку.
+  document.addEventListener('error', e => {
+    const t = e.target;
+    if (t && t.tagName === 'IMG' && !t.dataset.fb) { t.dataset.fb = '1'; t.src = placeholderSvg(t.dataset.name || 'Skin'); }
+  }, true);
+  const imgUrl = item => (item?.image_url && item.image_url.length > 20 && !item.image_url.endsWith('/image/')) ? item.image_url : placeholderSvg(item?.name || 'Skin');
+  function card(item, opts = {}) {
+    return `<button class="itemCard${opts.selected ? ' selected' : ''}" data-item="${esc(opts.key)}" data-kind="${opts.kind}" title="${esc(item.name)}"><img loading="lazy" src="${imgUrl(item)}" alt="" data-name="${esc(item.name)}"><div class="itemTitle">${esc(item.name)}</div><div class="itemPrice">${money(item.price_cents)}</div><div class="rarity">${esc(item.rarity || '')}</div></button>`;
+  }
+  function setStatus(msg, type = '') { $('status').textContent = msg; $('status').className = 'status ' + type; }
+  function setBalance() {
+    const t = money(state.user?.balanceCents || 0);
+    $('balanceTop').textContent = t; $('balanceValue').textContent = t; $('depositBalance').textContent = t;
+  }
+
+  /* ---------- колесо ---------- */
+  function setGauge() {
+    $('gauge').style.setProperty('--win', (state.chance * 3.6) + 'deg');
+    setCenter(state.chance + '%', '');
+    document.querySelectorAll('.chanceBtn').forEach(b => b.classList.toggle('active', Number(b.dataset.chance) === state.chance));
+  }
+  function setCenter(text, cls) {
+    $('chanceLabel').textContent = text; $('chanceLabel').className = 'chanceLabel ' + cls;
+    $('gauge').classList.remove('win', 'lose'); if (cls) $('gauge').classList.add(cls);
+  }
+  // Стрелка останавливается ровно там, где решил сервер: в жёлтой дуге (успех) или на серой части (неудача).
+  function spinTo(success) {
+    const win = state.chance * 3.6;
+    const m = Math.min(3, win / 4, (360 - win) / 4);
+    const [a, b] = success ? [m, win - m] : [win + m, 360 - m];
+    const finalAngle = a + Math.random() * (b - a);
+    const curMod = ((state.pointer % 360) + 360) % 360;
+    state.pointer += 360 * 6 + ((finalAngle - curMod + 360) % 360);
+    const p = $('pointer');
+    p.style.transition = 'transform 5.2s cubic-bezier(.12,.62,.1,1)';
+    p.style.transform = `rotate(${state.pointer}deg)`;
+    return sleep(5350);
+  }
+
+  /* ---------- рендер ---------- */
+  function renderPick(which, item) {
+    const el = $(which === 'source' ? 'sourcePick' : 'targetPick');
+    const heading = which === 'source' ? 'ТВОЙ СКИН' : 'ЦЕЛЬ';
+    if (!item) {
+      el.innerHTML = `<h3>${which === 'source' ? 'ВЫБЕРИ СКИН ИЗ ИНВЕНТАРЯ' : 'ВЫБЕРИ ЦЕЛЕВОЙ ПРЕДМЕТ'}</h3><div class="placeholder">❯❯</div><div class="itemName">${which === 'source' ? 'Сначала выбери предмет снизу' : 'Подходящие предметы появятся справа'}</div>`;
+      return;
+    }
+    el.innerHTML = `<h3>${heading}</h3><img class="bigItem" src="${imgUrl(item)}" alt=""><div class="itemName">${esc(item.name)}</div><div class="price">${money(item.price_cents)}</div>`;
+  }
+  function renderLeft() {
+    const isInv = state.view === 'inventory';
+    $('leftTitle').textContent = isInv ? 'Мой инвентарь' : 'Магазин';
+    $('inventoryTab').classList.toggle('active', isInv); $('shopTab').classList.toggle('active', !isInv);
+    $('shopQuery').style.display = isInv ? 'none' : 'block';
+    $('shopSort').style.display = isInv ? 'none' : '';
+    $('shopSort').textContent = state.shop.sort === 'asc' ? '↑ Дешёвые' : '↓ Дорогие';
+    $('invCount').style.display = isInv ? '' : 'none';
+    const list = isInv ? state.inventory : state.shop.items;
+    $('invCount').textContent = `${state.inventory.length} предмет.`;
+    $('inventoryGrid').innerHTML = list.map(it => card(it, { kind: isInv ? 'source' : 'shop', key: isInv ? it.inventory_id : it.id, selected: isInv && String(state.source?.inventory_id) === String(it.inventory_id) })).join('');
+    $('shopMore').style.display = !isInv && state.shop.hasMore ? 'block' : 'none';
+    const empty = $('inventoryEmpty');
+    empty.style.display = list.length ? 'none' : 'block';
+    empty.innerHTML = isInv
+      ? '<strong>Инвентарь пуст</strong>Пополни баланс и купи скин во вкладке «Магазин» (▦).'
+      : '<strong>Ничего не найдено</strong>Если каталог пуст — загрузи скины командой <b>npm run import:steam</b>.';
+  }
+  function renderTargets() {
+    const t = state.targets;
+    $('targetGrid').innerHTML = t.items.map(it => card(it, { kind: 'target', key: it.id, selected: state.target?.id === it.id })).join('');
+    $('targetMore').style.display = t.hasMore ? 'block' : 'none';
+    const empty = $('targetEmpty');
+    empty.style.display = t.items.length ? 'none' : 'block';
+    empty.innerHTML = state.source
+      ? '<strong>Нет подходящих предметов</strong>Попробуй другой шанс или диапазон цены.'
+      : '<strong>Сначала выбери свой скин</strong>Подходящие цели появятся здесь.';
+  }
+  function renderSide() {
+    $('sideItems').innerHTML = state.popular.map(it => `<button class="skinMini" data-side="${esc(it.name)}"><img src="${imgUrl(it)}" alt=""><b>${esc(it.name)}</b><small>${money(it.price_cents)}</small></button>`).join('');
+  }
+  function renderTx() {
+    const names = { purchase: 'Покупка', deposit: 'Пополнение', dev_credit: 'Тестовое пополнение', welcome_bonus: 'Бонус' };
+    $('txList').innerHTML = state.transactions.length ? state.transactions.map(t => {
+      const pos = Number(t.amount_cents) >= 0;
+      return `<div class="txRow"><div>${esc(names[t.kind] || t.kind)}<small>${esc(t.note || '')} · ${new Date(t.created_at).toLocaleString('ru-RU')}</small></div><b class="${pos ? 'plus' : 'minus'}">${pos ? '+' : ''}${money(t.amount_cents)}</b></div>`;
+    }).join('') : '<div class="note">Операций пока нет.</div>';
+  }
+  function updateUpgradeButton() {
+    $('upgradeBtn').disabled = state.busy || !(state.source && state.target);
+    $('upgradeBtn').textContent = state.busy ? 'КРУТИМ…' : '❯❯ ПРОКАЧАТЬ';
+  }
+
+  /* ---------- данные ---------- */
+  async function refresh() {
+    const d = await api('/api/me');
+    state.user = d.user; state.inventory = d.inventory; state.popular = d.popular; state.transactions = d.transactions;
+    $('profileSummary').textContent = `Игрок: ${state.user.username} · Telegram ID: ${state.user.telegramId}`;
+    $('steamUrl').value = state.user.steamInventoryUrl || '';
+    if (state.source) state.source = state.inventory.find(it => String(it.inventory_id) === String(state.source.inventory_id)) || null;
+    setBalance(); renderTx(); renderLeft(); renderSide(); renderPick('source', state.source); updateUpgradeButton();
+  }
+  let shopReq = 0;
+  async function loadShop(reset = true) {
+    const my = ++shopReq;
+    if (reset) state.shop.page = 0;
+    try {
+      const d = await api(`/api/items?q=${enc(state.shop.q)}&page=${state.shop.page}&sort=${state.shop.sort}`);
+      if (my !== shopReq) return;
+      state.shop.items = reset ? d.items : state.shop.items.concat(d.items);
+      state.shop.hasMore = d.hasMore; renderLeft();
+    } catch (e) { setStatus(e.message, 'error'); }
+  }
+  let targetReq = 0;
+  async function loadTargets(reset = true) {
+    if (!state.source) { state.targets = { items: [], page: 0, hasMore: false, band: null }; renderTargets(); renderPick('target', null); updateUpgradeButton(); return; }
+    const my = ++targetReq;
+    if (reset) state.targets.page = 0;
+    const min = $('priceMin').value === '' ? '' : Math.round(Number($('priceMin').value) * 100);
+    const max = $('priceMax').value === '' ? '' : Math.round(Number($('priceMax').value) * 100);
+    try {
+      const d = await api(`/api/targets?sourceId=${enc(state.source.inventory_id)}&chance=${state.chance}&q=${enc($('targetQuery').value.trim())}&min=${min}&max=${max}&page=${state.targets.page}`);
+      if (my !== targetReq) return;
+      state.targets.items = reset ? d.targets : state.targets.items.concat(d.targets);
+      state.targets.hasMore = d.hasMore; state.targets.band = d.priceBandCents;
+      renderTargets();
+      setStatus(`Для шанса ${state.chance}% подходят предметы ${money(d.priceBandCents.min)} – ${money(d.priceBandCents.max)}.`);
+    } catch (e) { setStatus(e.message, 'error'); }
+  }
+
+  /* ---------- действия ---------- */
+  async function selectSource(inv) {
+    state.source = inv; state.target = null;
+    renderPick('source', inv); renderPick('target', null); renderLeft(); updateUpgradeButton();
+    setCenter(state.chance + '%', '');
+    await loadTargets(true);
+  }
+  async function buyItem(key) {
+    const item = state.shop.items.find(it => it.id === key);
+    if (!item) return;
+    if (!(await askConfirm(`Купить «${item.name}» за ${money(item.price_cents)}?`))) return;
+    try {
+      const d = await api('/api/shop/buy', { method: 'POST', body: JSON.stringify({ itemId: item.id }) });
+      await refresh();
+      state.view = 'inventory';
+      const bought = state.inventory.find(i => String(i.inventory_id) === String(d.inventoryId));
+      if (bought) await selectSource(bought); else renderLeft();
+      setStatus(`Куплено: ${d.name}. Баланс: ${money(d.balanceCents)}.`, 'ok');
+    } catch (e) {
+      setStatus(e.message, 'error');
+      if (e.code === 'INSUFFICIENT_FUNDS') openDeposit();
+    }
+  }
+  async function doUpgrade() {
+    if (state.busy || !state.source || !state.target) return;
+    state.busy = true; updateUpgradeButton(); tap();
+    try { tg?.enableClosingConfirmation?.(); } catch (_) { /* ignore */ }
+    setCenter(state.chance + '%', ''); setStatus('Апгрейд…');
+    let result;
+    try {
+      result = await api('/api/upgrade', { method: 'POST', body: JSON.stringify({ sourceInventoryId: state.source.inventory_id, targetItemId: state.target.id, chance: state.chance }) });
+    } catch (e) { state.busy = false; try { tg?.disableClosingConfirmation?.(); } catch (_) { /* ignore */ } updateUpgradeButton(); setStatus(e.message, 'error'); return; }
+    await spinTo(result.success);
+    setCenter(result.success ? 'УСПЕХ' : 'НЕУДАЧА', result.success ? 'win' : 'lose');
+    haptic(result.success ? 'success' : 'error');
+    setStatus(result.success ? `УСПЕХ! Получен ${result.target}.` : `Неудача. ${result.message}`, result.success ? 'ok' : 'error');
+    await sleep(1300);
+    state.busy = false; state.source = null; state.target = null;
+    try { tg?.disableClosingConfirmation?.(); } catch (_) { /* ignore */ }
+    try { await refresh(); } catch (e) { setStatus(e.message, 'error'); }
+    renderPick('source', null); renderPick('target', null);
+    await loadTargets(true); updateUpgradeButton();
+  }
+
+  /* ---------- пополнение ---------- */
+  async function openDeposit() {
+    $('profileModal').classList.remove('open'); $('depositModal').classList.add('open'); $('depositMsg').textContent = ''; syncBack();
+    if (!state.networks.length) {
+      try { const d = await api('/api/deposit-info'); state.networks = d.networks; state.network = d.networks[0]?.id || null; } catch (_) { /* ignore */ }
+    }
+    renderNetworks();
+  }
+  function renderNetworks() {
+    $('networkChips').innerHTML = state.networks.map(n => `<button class="chip${state.network === n.id ? ' active' : ''}" data-net="${esc(n.id)}">${esc(n.label)}</button>`).join('');
+  }
+  $('networkChips').onclick = e => { const b = e.target.closest('[data-net]'); if (b) { state.network = b.dataset.net; renderNetworks(); } };
+  $('quickAmounts').onclick = e => { const b = e.target.closest('[data-amount]'); if (b) $('depositAmount').value = b.dataset.amount; };
+  $('depositGo').onclick = async () => {
+    const rub = Number($('depositAmount').value);
+    if (!state.network) { $('depositMsg').textContent = 'Выбери сеть для пополнения.'; return; }
+    if (!(rub >= 100)) { $('depositMsg').textContent = 'Минимальная сумма — 100 ₽.'; return; }
+    try {
+      const d = await api('/api/deposit/create', { method: 'POST', body: JSON.stringify({ network: state.network, amountCents: Math.round(rub * 100) }) });
+      if (d.payUrl) { if (tg?.openLink) tg.openLink(d.payUrl); else window.open(d.payUrl, '_blank'); }
+      else $('depositMsg').textContent = d.address ? `Адрес для оплаты: ${d.address}` : 'Счёт создан.';
+    } catch (e) { $('depositMsg').textContent = e.message; }
+  };
+  $('devCredit').onclick = async () => {
+    try { const d = await api('/api/dev/credit', { method: 'POST', body: JSON.stringify({ amountCents: 100000 }) }); state.user.balanceCents = d.balanceCents; setBalance(); await refresh(); $('depositMsg').textContent = 'Зачислено 1 000 ₽ (тест).'; }
+    catch (e) { $('depositMsg').textContent = e.message; }
+  };
+
+  /* ---------- события ---------- */
+  $('inventoryGrid').onclick = async e => {
+    if (state.busy) return;
+    const el = e.target.closest('[data-item]'); if (!el) return;
+    if (el.dataset.kind === 'source') { const inv = state.inventory.find(it => String(it.inventory_id) === el.dataset.item); if (inv) await selectSource(inv); }
+    else await buyItem(el.dataset.item);
+  };
+  $('targetGrid').onclick = e => {
+    if (state.busy) return;
+    const el = e.target.closest('[data-item]'); if (!el) return;
+    tap(); state.target = state.targets.items.find(it => it.id === el.dataset.item) || null;
+    renderPick('target', state.target); renderTargets(); updateUpgradeButton(); setCenter(state.chance + '%', '');
+  };
+  $('sideItems').onclick = e => {
+    const el = e.target.closest('[data-side]'); if (!el || state.busy) return;
+    state.view = 'shop'; state.shop.q = el.dataset.side; $('shopQuery').value = state.shop.q; renderLeft(); loadShop(true);
+  };
+  document.querySelectorAll('.chanceBtn').forEach(b => b.addEventListener('click', async () => {
+    if (state.busy) return;
+    tap(); state.chance = Number(b.dataset.chance); state.target = null;
+    setGauge(); renderPick('target', null); updateUpgradeButton(); await loadTargets(true);
+  }));
+  $('inventoryTab').onclick = () => { if (state.busy) return; state.view = 'inventory'; renderLeft(); };
+  $('shopTab').onclick = () => { if (state.busy) return; state.view = 'shop'; renderLeft(); loadShop(true); };
+  $('shopQuery').oninput = debounce(() => { state.shop.q = $('shopQuery').value.trim(); loadShop(true); });
+  $('shopSort').onclick = () => { state.shop.sort = state.shop.sort === 'asc' ? 'desc' : 'asc'; renderLeft(); loadShop(true); };
+  $('shopMore').onclick = () => { state.shop.page++; loadShop(false); };
+  $('targetMore').onclick = () => { state.targets.page++; loadTargets(false); };
+  const reloadTargets = debounce(() => { if (state.source) loadTargets(true); });
+  ['targetQuery', 'priceMin', 'priceMax'].forEach(id => $(id).addEventListener('input', reloadTargets));
+  $('clearFilters').onclick = () => { $('targetQuery').value = ''; $('priceMin').value = ''; $('priceMax').value = ''; if (state.source) loadTargets(true); };
+  $('upgradeBtn').onclick = doUpgrade;
+
+  const closeModals = () => { document.querySelectorAll('.modal').forEach(m => m.classList.remove('open')); syncBack(); };
+  try { tg?.BackButton?.onClick(closeModals); } catch (_) { /* ignore */ }
+  const openProfile = () => { closeModals(); $('profileModal').classList.add('open'); syncBack(); };
+  $('openProfile').onclick = openProfile; $('navProfile').onclick = openProfile;
+  $('openDeposit').onclick = openDeposit; $('profileDeposit').onclick = openDeposit;
+  $('closeProfile').onclick = closeModals; $('closeDeposit').onclick = closeModals;
+  document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) closeModals(); }));
+  $('saveProfile').onclick = async () => {
+    try { const d = await api('/api/profile', { method: 'PUT', body: JSON.stringify({ steamInventoryUrl: $('steamUrl').value }) }); $('steamUrl').value = d.steamInventoryUrl; $('profileMsg').textContent = 'Профиль сохранён.'; }
+    catch (e) { $('profileMsg').textContent = e.message; }
+  };
+
+  async function boot() {
+    renderPick('source', null); renderPick('target', null); setGauge(); renderTargets();
+    try {
+      state.config = await api('/api/config');
+      $('devCredit').style.display = state.config.devMode ? 'block' : 'none';
+      await refresh();
+      setStatus('Выбери свой скин, шанс и цель.');
+    } catch (e) {
+      $('inventoryEmpty').style.display = 'block';
+      $('inventoryEmpty').innerHTML = `<strong>Не удалось загрузить аккаунт</strong>${esc(e.message)}<br>Открой приложение через <b>npm start</b> (http://localhost:3000) и проверь .env и базу данных.`;
+      setStatus(e.message, 'error');
+    }
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
